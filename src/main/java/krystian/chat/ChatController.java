@@ -4,6 +4,8 @@ import krystian.chat.message.Message;
 import krystian.chat.message.MessageService;
 import krystian.chat.room.ChatRoom;
 import krystian.chat.room.ChatRoomService;
+import krystian.chat.room.RoomMessages;
+import krystian.chat.room.RoomTime;
 import krystian.chat.user.ChatUser;
 import krystian.chat.user.ChatUserService;
 import org.springframework.web.bind.annotation.*;
@@ -42,6 +44,14 @@ public class ChatController {
         if (room.isEmpty() || !room.get().getUsers().contains(user.get()))
             return null;
         return messageService.getMessages(room.get(), from);
+    }
+
+    @PostMapping("/messages")
+    private List<RoomMessages> getMessagesMulti(@RequestBody List<RoomTime> requestedRooms, HttpSession session){
+        Optional<ChatUser> user = chatUserService.getUserForSessionId(session.getId());
+        if (user.isEmpty())
+            return Collections.emptyList();
+        return messageService.getNewMessages(user.get(), requestedRooms);
     }
 
     @PostMapping("/send/{roomId}")

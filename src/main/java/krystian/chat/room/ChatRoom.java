@@ -29,7 +29,7 @@ public class ChatRoom {
     @JsonIgnore
     private List<ChatUser> users;
 
-    @OneToMany(cascade = CascadeType.ALL,orphanRemoval = true, mappedBy = "room")
+    @OneToMany(cascade = CascadeType.ALL,orphanRemoval = true, mappedBy = "room", fetch = FetchType.LAZY)
     @JsonIgnore
     private List<Message> messages;
 
