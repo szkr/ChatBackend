@@ -47,7 +47,7 @@ public class ChatController {
     }
 
     @PostMapping("/messages")
-    private List<RoomMessages> getMessagesMulti(@RequestBody List<RoomTime> requestedRooms, HttpSession session){
+    private List<RoomMessages> getMessagesMulti(@RequestBody List<RoomTime> requestedRooms, HttpSession session) {
         Optional<ChatUser> user = chatUserService.getUserForSessionId(session.getId());
         if (user.isEmpty())
             return Collections.emptyList();
@@ -60,7 +60,7 @@ public class ChatController {
         if (user.isEmpty())
             return null;
         Optional<ChatRoom> room = chatRoomService.getRoomById(roomId);
-        if(room.isEmpty())
+        if (room.isEmpty())
             return null;
         messageService.sendMessage(m, user.get(), room.get());
         return m;
@@ -82,6 +82,17 @@ public class ChatController {
     private ChatUser register(HttpSession session) {
         Optional<ChatUser> user = chatUserService.addUser("test", "pictureUrl", session.getId());
         return user.orElse(null);
+    }
+
+    @GetMapping("/room/{id}/users")
+    private List<ChatUser> getRoomMembers(HttpSession session, @PathVariable long id) {
+        Optional<ChatUser> user = chatUserService.getUserForSessionId(session.getId());
+        if (user.isPresent()) {
+            Optional<ChatRoom> room = chatRoomService.getRoomById(id);
+            if (room.isPresent() && room.get().getUsers().contains(user.get()))
+                return room.get().getUsers();
+        }
+        return Collections.emptyList();
     }
 
     @GetMapping("/user/{id}")
